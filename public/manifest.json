@@ -1,0 +1,58 @@
+{
+  "name": "LiquidGlass Task Manager",
+  "short_name": "LiquidGlass",
+  "description": "A modern task management web app with glassmorphism design",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#141E1E",
+  "theme_color": "#0FF0FC",
+  "orientation": "portrait-primary",
+  "categories": ["productivity", "business", "utilities"],
+  "lang": "en-US",
+  "dir": "ltr",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshot-desktop.png",
+      "sizes": "1280x800",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Desktop view of LiquidGlass Task Manager"
+    },
+    {
+      "src": "/screenshot-mobile.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Mobile view of LiquidGlass Task Manager"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Create New Task",
+      "short_name": "New Task",
+      "description": "Quick task creation",
+      "url": "/?action=new",
+      "icons": [{ "src": "/icon-96.png", "sizes": "96x96" }]
+    }
+  ]
+}
