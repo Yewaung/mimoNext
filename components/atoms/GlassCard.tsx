@@ -27,7 +27,7 @@ const GlassCard = forwardRef<HTMLDivElement, GlassCardProps>(
       // Base glass styles
       'glass rounded-card border-glassBorder relative overflow-hidden',
       'transition-all duration-200 ease-out',
-      
+
       // Padding variants
       {
         'p-0': padding === 'none',
@@ -35,51 +35,45 @@ const GlassCard = forwardRef<HTMLDivElement, GlassCardProps>(
         'p-4': padding === 'md',
         'p-6': padding === 'lg',
       },
-      
+
       // Variant styles
       {
         'shadow-glass': variant === 'default',
         'shadow-glass-hover': variant === 'elevated',
         'border-2 border-glassBorder': variant === 'bordered',
       },
-      
+
       // Hover effects
       {
         'hover:shadow-glass-hover hover:scale-[1.02] cursor-pointer': hover,
       },
-      
+
       className
     );
 
     const cardContent = (
-      <div 
-        ref={ref}
-        className={baseStyles}
-        {...props}
-      >
+      <div ref={ref} className={baseStyles} {...props}>
         {/* Background overlay for additional depth */}
-        <div className="absolute inset-0 bg-gradient-to-br from-glass-light to-glass-dark opacity-50 pointer-events-none" />
-        
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-glass-light to-glass-dark opacity-50" />
+
         {/* Content wrapper */}
-        <div className="relative z-10">
-          {children}
-        </div>
-        
+        <div className="relative z-10">{children}</div>
+
         {/* Subtle border highlight */}
-        <div className="absolute inset-0 rounded-card bg-gradient-to-br from-white/20 via-transparent to-transparent opacity-40 pointer-events-none" />
+        <div className="pointer-events-none absolute inset-0 rounded-card bg-gradient-to-br from-white/20 via-transparent to-transparent opacity-40" />
       </div>
     );
 
     if (hover) {
       return (
         <motion.div
-          whileHover={{ 
+          whileHover={{
             scale: 1.02,
-            transition: { duration: 0.2 }
+            transition: { duration: 0.2 },
           }}
-          whileTap={{ 
+          whileTap={{
             scale: 0.98,
-            transition: { duration: 0.1 }
+            transition: { duration: 0.1 },
           }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
