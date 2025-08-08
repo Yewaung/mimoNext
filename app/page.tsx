@@ -90,37 +90,37 @@ export default function HomePage() {
   };
 
   // Optimistic update for drag and drop - updates UI first, then syncs to storage
-  const handleTaskStatusChange = useCallback(async (
-    taskId: string,
-    newStatus: TaskStatus
-  ) => {
-    // Find the current task to get the previous status for potential rollback
-    const currentTask = tasks.find(task => task.id === taskId);
-    if (!currentTask) {
-      console.error('Task not found for status update');
-      return;
-    }
+  const handleTaskStatusChange = useCallback(
+    async (taskId: string, newStatus: TaskStatus) => {
+      // Find the current task to get the previous status for potential rollback
+      const currentTask = tasks.find(task => task.id === taskId);
+      if (!currentTask) {
+        console.error('Task not found for status update');
+        return;
+      }
 
-    const previousStatus = currentTask.status;
+      const previousStatus = currentTask.status;
 
-    // Step 1: Update UI immediately (optimistic update)
-    updateLocalTask(taskId, { status: newStatus });
+      // Step 1: Update UI immediately (optimistic update)
+      updateLocalTask(taskId, { status: newStatus });
 
-    // Step 2: Update storage in the background
-    try {
-      await taskStorage.updateTask({ id: taskId, status: newStatus });
-    } catch (err) {
-      // Step 3: If storage update fails, revert the UI change
-      console.error('Failed to update task status in storage:', err);
-      updateLocalTask(taskId, { status: previousStatus });
-      
-      // Show error message (you could also use a toast notification)
-      setDragDropError('Failed to update task status. Please try again.');
-      
-      // Clear error after a few seconds
-      setTimeout(() => setDragDropError(null), 3000);
-    }
-  }, [tasks, updateLocalTask]);
+      // Step 2: Update storage in the background
+      try {
+        await taskStorage.updateTask({ id: taskId, status: newStatus });
+      } catch (err) {
+        // Step 3: If storage update fails, revert the UI change
+        console.error('Failed to update task status in storage:', err);
+        updateLocalTask(taskId, { status: previousStatus });
+
+        // Show error message (you could also use a toast notification)
+        setDragDropError('Failed to update task status. Please try again.');
+
+        // Clear error after a few seconds
+        setTimeout(() => setDragDropError(null), 3000);
+      }
+    },
+    [tasks, updateLocalTask]
+  );
 
   const handleExportTasks = async () => {
     try {
@@ -165,7 +165,7 @@ export default function HomePage() {
       >
         <div className="space-y-2">
           <h1 className="text-4xl font-bold text-text text-shadow md:text-6xl">
-            <span className="from-primary via-secondary to-accent bg-gradient-to-r bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
               LiquidGlass
             </span>
           </h1>
@@ -265,7 +265,7 @@ export default function HomePage() {
       {loading && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/50 backdrop-blur-sm">
           <GlassCard className="p-6 text-center">
-            <div className="border-primary mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
+            <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
             <p className="text-text">Loading tasks...</p>
           </GlassCard>
         </div>
