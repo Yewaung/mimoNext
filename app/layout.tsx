@@ -17,18 +17,18 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'LiquidGlass Task Manager',
-  description: 'A modern task management web app with glassmorphism design',
-  keywords: ['task manager', 'productivity', 'glassmorphism', 'tasks', 'todo'],
-  authors: [{ name: 'LiquidGlass' }],
-  creator: 'LiquidGlass',
-  publisher: 'LiquidGlass',
+  title: 'Mimo Task Manager',
+  description: 'A lightweight local storage task board with modern design',
+  keywords: ['task manager', 'productivity', 'local storage', 'tasks', 'todo'],
+  authors: [{ name: 'Mimo' }],
+  creator: 'Mimo',
+  publisher: 'Mimo',
   formatDetection: {
     email: false,
     address: false,
     telephone: false,
   },
-  metadataBase: new URL('https://liquidglass-tasks.app'),
+  metadataBase: new URL('https://mimo-task-manager.vercel.app'),
   alternates: {
     canonical: '/',
   },
@@ -39,23 +39,23 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://liquidglass-tasks.app',
-    title: 'LiquidGlass Task Manager',
-    description: 'A modern task management web app with glassmorphism design',
-    siteName: 'LiquidGlass Task Manager',
+    url: 'https://mimo-task-manager.vercel.app',
+    title: 'Mimo Task Manager',
+    description: 'A lightweight local storage task board with modern design',
+    siteName: 'Mimo Task Manager',
     images: [
       {
         url: '/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'LiquidGlass Task Manager',
+        alt: 'Mimo Task Manager',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'LiquidGlass Task Manager',
-    description: 'A modern task management web app with glassmorphism design',
+    title: 'Mimo Task Manager',
+    description: 'A lightweight local storage task board with modern design',
     images: ['/twitter-image.png'],
   },
   manifest: '/manifest.json',

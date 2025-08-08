@@ -1,7 +1,7 @@
 {
-  "name": "LiquidGlass Task Manager",
-  "short_name": "LiquidGlass",
-  "description": "A modern task management web app with glassmorphism design",
+  "name": "Mimo Task Manager",
+  "short_name": "Mimo",
+  "description": "A lightweight local storage task board with modern design",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#141E1E",

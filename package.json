@@ -1,7 +1,7 @@
 {
-  "name": "liquidglass-task-manager",
+  "name": "mimo-task-manager",
   "version": "1.0.0",
-  "description": "A modern task management web app using browser storage with glassmorphism design",
+  "description": "A lightweight local storage task board with modern design",
   "private": true,
   "scripts": {
     "dev": "next dev --turbo",

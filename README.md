@@ -1,15 +1,15 @@
-# 🌟 LiquidGlass Task Manager
+# 🌟 Mimo Task Manager
 
-A modern, beautiful task management web application built with Next.js 15 and featuring a stunning glassmorphism design. Manage your tasks across six intuitive categories: Thing to Do, Working, Wait, Done, Resources, and Shortcut.
+A lightweight local storage task board with modern design, built with Next.js 15. Manage your tasks across six intuitive categories: Thing to Do, Working, Wait, Done, Resources, and Shortcut.
 
-![LiquidGlass Task Manager](https://via.placeholder.com/800x400/0FF0FC/000000?text=LiquidGlass+Task+Manager)
+![Mimo Task Manager](https://via.placeholder.com/800x400/0FF0FC/000000?text=Mimo+Task+Manager)
 
 ## ✨ Features
 
-### 🎨 **Glassmorphism Design**
-- Stunning glass-like UI with backdrop blur effects
-- Custom neon color scheme with primary cyan, secondary purple, and accent gold
-- Smooth animations and micro-interactions
+### 🎨 **Modern Design**
+- Clean, minimalist UI with modern aesthetics
+- Custom color scheme with primary cyan, secondary purple, and accent gold
+- Smooth interactions and responsive design
 - Dark theme optimized for modern devices
 
 ### 📋 **Task Management**
@@ -37,8 +37,8 @@ A modern, beautiful task management web application built with Next.js 15 and fe
 - **Framework**: Next.js 15 with App Router
 - **Runtime**: React 19 with Concurrent Features
 - **Language**: TypeScript with strict configuration
-- **Styling**: Tailwind CSS with custom glassmorphism theme
-- **Animation**: Framer Motion for smooth transitions
+- **Styling**: Tailwind CSS with custom modern theme
+- **Animation**: Framer Motion for smooth interactions
 - **Storage**: IndexedDB with localStorage fallback
 - **Forms**: React Hook Form with Zod validation
 - **Icons**: Lucide React icon library
@@ -54,8 +54,8 @@ A modern, beautiful task management web application built with Next.js 15 and fe
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/liquidglass-task-manager.git
-   cd liquidglass-task-manager
+   git clone https://github.com/Yewaung/mimoNext.git
+   cd mimoNext
    ```
 
 2. **Install dependencies**
@@ -92,7 +92,7 @@ npm run test:watch  # Run tests in watch mode
 ## 📁 Project Structure
 
 ```
-liquidglass-task-manager/
+mimoNext/
 ├── app/                    # Next.js App Router
 │   ├── globals.css        # Global styles and Tailwind imports
 │   ├── layout.tsx         # Root layout with fonts and metadata

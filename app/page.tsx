@@ -166,11 +166,11 @@ export default function HomePage() {
         <div className="space-y-2">
           <h1 className="text-4xl font-bold text-text text-shadow md:text-6xl">
             <span className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-              LiquidGlass
+              Mimo
             </span>
           </h1>
           <p className="text-lg text-text-muted">
-            Modern task management with style
+            Lightweight local storage board
           </p>
         </div>
       </motion.header>
