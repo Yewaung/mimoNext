@@ -79,34 +79,42 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html 
-      lang="en" 
+    <html
+      lang="en"
       className={`${poppins.variable} ${inter.variable}`}
       suppressHydrationWarning
     >
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin=""
+        />
       </head>
-      <body 
+      <body
         className="min-h-screen bg-background font-sans antialiased"
         suppressHydrationWarning
       >
         {/* Background gradient */}
-        <div className="fixed inset-0 bg-gradient-to-br from-purple-900/20 via-blue-900/20 to-cyan-900/20 pointer-events-none" />
-        
+        <div className="pointer-events-none fixed inset-0 bg-gradient-to-br from-purple-900/20 via-blue-900/20 to-cyan-900/20" />
+
         {/* Animated background elements */}
-        <div className="fixed inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/10 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-secondary/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-60 h-60 bg-accent/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
+        <div className="pointer-events-none fixed inset-0 overflow-hidden">
+          <div className="bg-primary/10 absolute -right-40 -top-40 h-80 w-80 animate-pulse rounded-full blur-3xl" />
+          <div
+            className="bg-secondary/10 absolute -bottom-40 -left-40 h-80 w-80 animate-pulse rounded-full blur-3xl"
+            style={{ animationDelay: '1s' }}
+          />
+          <div
+            className="bg-accent/10 absolute left-1/2 top-1/2 h-60 w-60 -translate-x-1/2 -translate-y-1/2 animate-pulse rounded-full blur-3xl"
+            style={{ animationDelay: '2s' }}
+          />
         </div>
-        
+
         {/* Main content */}
-        <div className="relative z-10">
-          {children}
-        </div>
-        
+        <div className="relative z-10">{children}</div>
+
         {/* Global toast container would go here if using react-hot-toast */}
       </body>
     </html>
