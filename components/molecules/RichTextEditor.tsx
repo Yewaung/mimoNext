@@ -1,7 +1,17 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Bold, Italic, List, Link, Hash, X } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { 
+  Bold, 
+  Italic, 
+  List, 
+  ListOrdered, 
+  Link,
+  AlignLeft,
+  AlignCenter,
+  AlignRight
+} from 'lucide-react';
 import { GlassButton } from '@/components/atoms/GlassButton';
 import { cn } from '@/utils/cn';
 
@@ -10,257 +20,233 @@ interface RichTextEditorProps {
   onChange: (value: string) => void;
   placeholder?: string;
   className?: string;
+  label?: string;
   error?: string;
 }
 
-interface Tag {
-  id: string;
-  text: string;
+interface FormatButton {
+  icon: React.ReactNode;
+  command: string;
+  value?: string;
+  title: string;
+  isActive?: boolean;
 }
 
 export function RichTextEditor({
   value,
   onChange,
-  placeholder = 'Enter task description...',
+  placeholder = 'Type your description here...',
   className,
+  label,
   error,
 }: RichTextEditorProps) {
-  const [isBold, setIsBold] = useState(false);
-  const [isItalic, setIsItalic] = useState(false);
-  const [isList, setIsList] = useState(false);
-  const [showUrlInput, setShowUrlInput] = useState(false);
-  const [urlText, setUrlText] = useState('');
-  const [urlLink, setUrlLink] = useState('');
-  const [tags, setTags] = useState<Tag[]>([]);
   const editorRef = useRef<HTMLDivElement>(null);
-  const urlInputRef = useRef<HTMLInputElement>(null);
+  const [isFocused, setIsFocused] = useState(false);
+  const [showLinkInput, setShowLinkInput] = useState(false);
+  const [linkUrl, setLinkUrl] = useState('');
 
-  // Parse existing content on mount
+  const formatButtons: FormatButton[] = [
+    {
+      icon: <Bold className="h-4 w-4" />,
+      command: 'bold',
+      title: 'Bold (Ctrl+B)',
+    },
+    {
+      icon: <Italic className="h-4 w-4" />,
+      command: 'italic',
+      title: 'Italic (Ctrl+I)',
+    },
+    {
+      icon: <List className="h-4 w-4" />,
+      command: 'insertUnorderedList',
+      title: 'Bullet List',
+    },
+    {
+      icon: <ListOrdered className="h-4 w-4" />,
+      command: 'insertOrderedList',
+      title: 'Numbered List',
+    },
+    {
+      icon: <AlignLeft className="h-4 w-4" />,
+      command: 'justifyLeft',
+      title: 'Align Left',
+    },
+    {
+      icon: <AlignCenter className="h-4 w-4" />,
+      command: 'justifyCenter',
+      title: 'Align Center',
+    },
+    {
+      icon: <AlignRight className="h-4 w-4" />,
+      command: 'justifyRight',
+      title: 'Align Right',
+    },
+    {
+      icon: <Link className="h-4 w-4" />,
+      command: 'createLink',
+      title: 'Insert Link',
+    },
+  ];
+
   useEffect(() => {
-    if (value) {
-      parseContent(value);
+    if (editorRef.current) {
+      editorRef.current.innerHTML = value;
     }
-  }, []);
+  }, [value]);
 
-  const parseContent = (content: string) => {
-    // Extract tags from content (format: #tag)
-    const tagRegex = /#(\w+)/g;
-    const foundTags: Tag[] = [];
-    let match;
-    
-    while ((match = tagRegex.exec(content)) !== null) {
-      if (match[1]) {
-        foundTags.push({
-          id: `tag-${Date.now()}-${Math.random()}`,
-          text: match[1]
-        });
-      }
+  const handleFormat = (command: string, value?: string) => {
+    if (command === 'createLink') {
+      setShowLinkInput(true);
+      return;
     }
-    
-    setTags(foundTags);
-  };
 
-  const formatText = (command: string, value?: string) => {
     document.execCommand(command, false, value);
-    editorRef.current?.focus();
+    updateValue();
   };
 
-  const handleBold = () => {
-    formatText('bold');
-    setIsBold(!isBold);
+  const insertLink = () => {
+    if (linkUrl.trim()) {
+      document.execCommand('createLink', false, linkUrl);
+      updateValue();
+    }
+    setShowLinkInput(false);
+    setLinkUrl('');
   };
 
-  const handleItalic = () => {
-    formatText('italic');
-    setIsItalic(!isItalic);
-  };
-
-  const handleList = () => {
-    formatText('insertUnorderedList');
-    setIsList(!isList);
-  };
-
-  const handleUrl = () => {
-    if (showUrlInput) {
-      if (urlText && urlLink) {
-        formatText('createLink', urlLink);
-        setUrlText('');
-        setUrlLink('');
-      }
-      setShowUrlInput(false);
-    } else {
-      setShowUrlInput(true);
-      setTimeout(() => urlInputRef.current?.focus(), 100);
+  const updateValue = () => {
+    if (editorRef.current) {
+      onChange(editorRef.current.innerHTML);
     }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      const selection = window.getSelection();
-      if (selection && selection.rangeCount > 0) {
-        const range = selection.getRangeAt(0);
-        const text = range.toString();
-        
-        // Check if we're creating a tag
-        if (text.startsWith('#')) {
-          e.preventDefault();
-          const tagText = text.substring(1);
-          if (tagText.trim()) {
-            const newTag: Tag = {
-              id: `tag-${Date.now()}-${Math.random()}`,
-              text: tagText.trim()
-            };
-            setTags(prev => [...prev, newTag]);
-            
-            // Replace the text with the tag
-            range.deleteContents();
-            const tagSpan = document.createElement('span');
-            tagSpan.className = 'inline-flex items-center gap-1 px-2 py-1 mx-1 text-xs font-medium bg-primary/20 text-primary rounded-full';
-            tagSpan.innerHTML = `#${tagText.trim()}`;
-            range.insertNode(tagSpan);
-            
-            // Add space after tag
-            const space = document.createTextNode(' ');
-            range.setStartAfter(tagSpan);
-            range.insertNode(space);
-            range.collapse(false);
-          }
-        }
-      }
+    if (e.key === 'Enter' && e.shiftKey) {
+      e.preventDefault();
+      document.execCommand('insertLineBreak', false);
+      updateValue();
     }
   };
 
-  const removeTag = (tagId: string) => {
-    setTags(prev => prev.filter(tag => tag.id !== tagId));
+  const handlePaste = (e: React.ClipboardEvent) => {
+    e.preventDefault();
+    const text = e.clipboardData.getData('text/plain');
+    document.execCommand('insertText', false, text);
+    updateValue();
   };
 
-  const handleInput = () => {
-    if (editorRef.current) {
-      const content = editorRef.current.innerHTML;
-      onChange(content);
-    }
+  const isFormatActive = (command: string): boolean => {
+    return document.queryCommandState(command);
   };
 
   return (
-    <div className={cn('space-y-2', className)}>
-      {/* Toolbar */}
-      <div className="flex items-center gap-1 p-2 bg-glass rounded-default border border-glassBorder">
-        <GlassButton
-          variant="ghost"
-          size="sm"
-          onClick={handleBold}
-          className={cn('p-1', isBold && 'bg-primary/20 text-primary')}
-          title="Bold"
-        >
-          <Bold className="h-4 w-4" />
-        </GlassButton>
-        
-        <GlassButton
-          variant="ghost"
-          size="sm"
-          onClick={handleItalic}
-          className={cn('p-1', isItalic && 'bg-primary/20 text-primary')}
-          title="Italic"
-        >
-          <Italic className="h-4 w-4" />
-        </GlassButton>
-        
-        <GlassButton
-          variant="ghost"
-          size="sm"
-          onClick={handleList}
-          className={cn('p-1', isList && 'bg-primary/20 text-primary')}
-          title="Bullet List"
-        >
-          <List className="h-4 w-4" />
-        </GlassButton>
-        
-        <GlassButton
-          variant="ghost"
-          size="sm"
-          onClick={handleUrl}
-          className={cn('p-1', showUrlInput && 'bg-primary/20 text-primary')}
-          title="Insert Link"
-        >
-          <Link className="h-4 w-4" />
-        </GlassButton>
-        
-        <div className="flex items-center gap-1 ml-2 text-xs text-text-muted">
-          <Hash className="h-3 w-3" />
-          <span>Press Enter after # to create tags</span>
-        </div>
-      </div>
-
-      {/* URL Input */}
-      {showUrlInput && (
-        <div className="flex gap-2 p-2 bg-glass rounded-default border border-glassBorder">
-          <input
-            ref={urlInputRef}
-            type="text"
-            placeholder="Link text"
-            value={urlText}
-            onChange={(e) => setUrlText(e.target.value)}
-            className="flex-1 bg-transparent border-none outline-none text-text placeholder-text-muted"
-          />
-          <input
-            type="url"
-            placeholder="URL"
-            value={urlLink}
-            onChange={(e) => setUrlLink(e.target.value)}
-            className="flex-1 bg-transparent border-none outline-none text-text placeholder-text-muted"
-          />
-          <GlassButton
-            variant="ghost"
-            size="sm"
-            onClick={handleUrl}
-            className="p-1"
-          >
-            ✓
-          </GlassButton>
-        </div>
+    <motion.div
+      className={cn('space-y-2', className)}
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.2 }}
+    >
+      {/* Label */}
+      {label && (
+        <label className="block text-sm font-medium text-text">{label}</label>
       )}
 
-      {/* Tags Display */}
-      {tags.length > 0 && (
-        <div className="flex flex-wrap gap-1">
-          {tags.map((tag) => (
-            <span
-              key={tag.id}
-              className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium bg-primary/20 text-primary rounded-full"
-            >
-              #{tag.text}
-                              <button
-                  onClick={() => removeTag(tag.id)}
-                  className="hover:text-primary/80 transition-colors"
-                >
-                <X className="h-3 w-3" />
-              </button>
-            </span>
-          ))}
-        </div>
+      {/* Formatting Toolbar */}
+      <div className="flex flex-wrap items-center gap-1 p-2 rounded-default border border-glassBorder bg-glass backdrop-blur-glass">
+        {formatButtons.map((button, index) => (
+          <GlassButton
+            key={index}
+            variant="ghost"
+            size="sm"
+            onClick={() => handleFormat(button.command, button.value)}
+            title={button.title}
+            className={cn(
+              'p-1.5 h-8 w-8',
+              isFormatActive(button.command) && 'bg-primary/20 text-primary'
+            )}
+          >
+            {button.icon}
+          </GlassButton>
+        ))}
+      </div>
+
+      {/* Link Input Modal */}
+      {showLinkInput && (
+        <motion.div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-background/50 backdrop-blur-sm p-4"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        >
+          <div className="w-full max-w-md space-y-4 rounded-card border border-glassBorder bg-glass backdrop-blur-glass p-4">
+            <h3 className="text-lg font-semibold text-text">Insert Link</h3>
+            <input
+              type="url"
+              placeholder="Enter URL..."
+              value={linkUrl}
+              onChange={(e) => setLinkUrl(e.target.value)}
+              className="w-full rounded-default border border-glassBorder bg-glass backdrop-blur-glass px-3 py-2 text-text placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50"
+              onKeyDown={(e) => e.key === 'Enter' && insertLink()}
+              autoFocus
+            />
+            <div className="flex gap-2">
+              <GlassButton
+                variant="primary"
+                size="sm"
+                onClick={insertLink}
+                className="flex-1"
+              >
+                Insert
+              </GlassButton>
+              <GlassButton
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowLinkInput(false)}
+                className="flex-1"
+              >
+                Cancel
+              </GlassButton>
+            </div>
+          </div>
+        </motion.div>
       )}
 
       {/* Editor */}
       <div
         ref={editorRef}
         contentEditable
-        onInput={handleInput}
-        onKeyDown={handleKeyDown}
         className={cn(
-          'min-h-[100px] p-3 bg-glass backdrop-blur-glass rounded-default border border-glassBorder',
+          'min-h-[120px] w-full rounded-default border border-glassBorder bg-glass backdrop-blur-glass px-4 py-3 text-text placeholder-text-muted resize-vertical',
+          'transition-all duration-200 ease-out',
           'focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50',
-          'text-text placeholder-text-muted',
-          'overflow-y-auto',
-          error && 'border-red-500'
+          'hover:bg-glass-medium hover:border-glassBorder/60',
+          'text-shadow',
+          isFocused && 'ring-2 ring-primary/50 border-primary/50',
+          error && 'border-red-400 focus:ring-red-400/50 focus:border-red-400'
         )}
-        dangerouslySetInnerHTML={{ __html: value }}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
+        onInput={updateValue}
+        onKeyDown={handleKeyDown}
+        onPaste={handlePaste}
         data-placeholder={placeholder}
+        suppressContentEditableWarning
       />
 
-      {/* Error Message */}
+      {/* Error message */}
       {error && (
-        <p className="text-sm text-red-500">{error}</p>
+        <motion.p
+          className="text-sm text-red-400"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          {error}
+        </motion.p>
       )}
-    </div>
+
+      {/* Help text */}
+      <p className="text-xs text-text-muted">
+        Use Shift+Enter for line breaks. Formatting toolbar available above.
+      </p>
+    </motion.div>
   );
 }

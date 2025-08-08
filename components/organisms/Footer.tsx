@@ -1,259 +1,254 @@
 'use client';
 
-import { ExternalLink, Github, Twitter, Mail } from 'lucide-react';
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Save, FileText, Trash2, Expand, Minimize } from 'lucide-react';
+import { GlassCard } from '@/components/atoms/GlassCard';
+import { GlassButton } from '@/components/atoms/GlassButton';
+import { RichTextEditor } from '@/components/molecules/RichTextEditor';
 import { cn } from '@/utils/cn';
 
 interface FooterProps {
   className?: string;
 }
 
-const toolCategories = [
-  {
-    title: 'Text Modification/Formatting',
-    tools: [
-      'Case Converter',
-      'Text Generator',
-      'Bold Text Generator',
-      'Italic Text Converter',
-      'Strikethrough Generator',
-      'Underline Text Generator',
-      'Small Text Generator',
-      'Wide Text Generator',
-      'Mirror Text Generator',
-      'Reverse Text Generator',
-      'Upside Down Text Generator',
-      'Bubble Text Generator',
-      'Zalgo Glitch Text Generator',
-    ]
-  },
-  {
-    title: 'Code & Data Translation',
-    tools: [
-      'Base64 Encoder/Decoder',
-      'Binary Code Translator',
-      'JSON Formatter',
-      'HTML Formatter',
-      'CSS Formatter',
-      'JavaScript Formatter',
-      'TypeScript Formatter',
-      'Markdown Formatter',
-      'XML Formatter',
-      'YAML Formatter',
-      'URL Encode/Decode',
-      'Morse Code Translator',
-      'Caesar Cipher Tool',
-    ]
-  },
-  {
-    title: 'Image Tools',
-    tools: [
-      'Image to Text Converter',
-      'ASCII Art Generator',
-      'JPG to PNG Converter',
-      'PNG to JPG Converter',
-      'WebP Converter',
-      'SVG to PNG Converter',
-      'Image Compression',
-      'Image Resizer',
-      'Color Picker',
-      'QR Code Generator',
-    ]
-  },
-  {
-    title: 'Random Generators',
-    tools: [
-      'Random Number Generator',
-      'Random Password Generator',
-      'UUID Generator',
-      'Random Date Generator',
-      'Random Choice Generator',
-      'Random Letter Generator',
-      'Random IP Generator',
-      'Random Color Generator',
-      'Random Name Generator',
-      'Random Quote Generator',
-    ]
-  },
-  {
-    title: 'Misc. Tools',
-    tools: [
-      'Online Notepad',
-      'Word Counter',
-      'Character Counter',
-      'Text Replacement Tool',
-      'Duplicate Remover',
-      'Sort Words Alphabetically',
-      'Word Cloud Generator',
-      'NATO Phonetic Alphabet',
-      'Roman Numeral Converter',
-      'Repeat Text Generator',
-    ]
-  }
-];
-
-const resources = [
-  { name: 'About', href: '/about' },
-  { name: 'Chrome Extension', href: '/extension' },
-  { name: 'Mobile App', href: '/mobile' },
-  { name: 'API Documentation', href: '/api' },
-  { name: 'Contact', href: '/contact' },
-  { name: 'Suggest a Tool', href: '/suggest' },
-];
-
-const languages = [
-  'English',
-  'Deutsch',
-  'Español',
-  'Français',
-  'Italiano',
-  'Português',
-  'Polski',
-  'Türkçe',
-  '中文',
-  '日本語',
-];
+interface Note {
+  id: string;
+  title: string;
+  content: string;
+  createdAt: string;
+  updatedAt: string;
+}
 
 export function Footer({ className }: FooterProps) {
+  const [notes, setNotes] = useState<Note[]>([]);
+  const [currentNote, setCurrentNote] = useState<Note | null>(null);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [showNewNote, setShowNewNote] = useState(false);
+
+  const createNewNote = () => {
+    const newNote: Note = {
+      id: Date.now().toString(),
+      title: 'Untitled Note',
+      content: '',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    setCurrentNote(newNote);
+    setNotes(prev => [newNote, ...prev]);
+    setShowNewNote(true);
+    setIsExpanded(true);
+  };
+
+  const saveNote = () => {
+    if (currentNote) {
+      const updatedNote = {
+        ...currentNote,
+        updatedAt: new Date().toISOString(),
+      };
+      setNotes(prev => 
+        prev.map(note => 
+          note.id === currentNote.id ? updatedNote : note
+        )
+      );
+      setCurrentNote(updatedNote);
+    }
+  };
+
+  const deleteNote = (noteId: string) => {
+    setNotes(prev => prev.filter(note => note.id !== noteId));
+    if (currentNote?.id === noteId) {
+      setCurrentNote(null);
+      setShowNewNote(false);
+    }
+  };
+
+  const selectNote = (note: Note) => {
+    setCurrentNote(note);
+    setShowNewNote(true);
+    setIsExpanded(true);
+  };
+
+  const updateNoteContent = (content: string) => {
+    if (currentNote) {
+      setCurrentNote({
+        ...currentNote,
+        content,
+        updatedAt: new Date().toISOString(),
+      });
+    }
+  };
+
+  const updateNoteTitle = (title: string) => {
+    if (currentNote) {
+      setCurrentNote({
+        ...currentNote,
+        title,
+        updatedAt: new Date().toISOString(),
+      });
+    }
+  };
+
   return (
-    <footer className={cn('mt-16 border-t border-glassBorder/30', className)}>
-      {/* Main Footer Content */}
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 xl:grid-cols-3">
-          {/* Tool Categories */}
-          {toolCategories.map((category, index) => (
-            <div key={index} className="space-y-4">
-              <h3 className="text-lg font-semibold text-text">
-                {category.title}
-              </h3>
-              <ul className="space-y-2">
-                {category.tools.slice(0, 8).map((tool, toolIndex) => (
-                  <li key={toolIndex}>
-                    <a
-                      href={`/tools/${tool.toLowerCase().replace(/\s+/g, '-')}`}
-                      className="text-sm text-text-muted hover:text-primary transition-colors duration-200"
-                    >
-                      {tool}
-                    </a>
-                  </li>
-                ))}
-                {category.tools.length > 8 && (
-                  <li>
-                    <a
-                      href={`/category/${category.title.toLowerCase().replace(/\s+/g, '-')}`}
-                                             className="text-sm text-primary hover:text-primary/80 transition-colors duration-200"
-                    >
-                      View all {category.tools.length} tools →
-                    </a>
-                  </li>
-                )}
-              </ul>
-            </div>
-          ))}
-        </div>
-
-        {/* Resources and Languages */}
-        <div className="mt-12 grid grid-cols-1 gap-8 border-t border-glassBorder/30 pt-8 md:grid-cols-2">
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-text">Resources</h3>
-            <div className="grid grid-cols-2 gap-2">
-              {resources.map((resource, index) => (
-                <a
-                  key={index}
-                  href={resource.href}
-                  className="text-sm text-text-muted hover:text-primary transition-colors duration-200"
-                >
-                  {resource.name}
-                </a>
-              ))}
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-text">Languages</h3>
-            <div className="grid grid-cols-2 gap-2">
-              {languages.map((language, index) => (
-                <a
-                  key={index}
-                  href={`/lang/${language.toLowerCase()}`}
-                  className="text-sm text-text-muted hover:text-primary transition-colors duration-200"
-                >
-                  {language}
-                </a>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Bottom Section */}
-        <div className="mt-12 border-t border-glassBorder/30 pt-8">
-          <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-            {/* Copyright and Info */}
-            <div className="text-center md:text-left">
-              <p className="text-sm text-text-muted">
-                Copyright ©2006-2025 Mimo Task Manager | Last Updated (Jan 2025)
-              </p>
-              <p className="text-xs text-text-muted mt-1">
-                Built with Next.js 15 and React 18 | Privacy Policy | Terms of Service
-              </p>
-            </div>
-
-            {/* Social Links */}
-            <div className="flex items-center gap-4">
-              <a
-                href="https://github.com/Yewaung/mimoNext"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-text-muted hover:text-primary transition-colors duration-200"
-                title="GitHub"
-              >
-                <Github className="h-5 w-5" />
-              </a>
-              <a
-                href="https://twitter.com/mimo"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-text-muted hover:text-primary transition-colors duration-200"
-                title="Twitter"
-              >
-                <Twitter className="h-5 w-5" />
-              </a>
-              <a
-                href="mailto:contact@mimo.com"
-                className="text-text-muted hover:text-primary transition-colors duration-200"
-                title="Contact"
-              >
-                <Mail className="h-5 w-5" />
-              </a>
-            </div>
-          </div>
-        </div>
+    <motion.footer
+      className={cn('fixed bottom-0 left-0 right-0 z-40', className)}
+      initial={{ y: '100%' }}
+      animate={{ y: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      {/* Footer Toggle */}
+      <div className="flex justify-center mb-2">
+        <GlassButton
+          variant="ghost"
+          size="sm"
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="rounded-full px-3 py-1"
+        >
+          {isExpanded ? (
+            <Minimize className="h-4 w-4" />
+          ) : (
+            <Expand className="h-4 w-4" />
+          )}
+          <span className="ml-2 text-sm">
+            {isExpanded ? 'Minimize' : 'Notes'}
+          </span>
+        </GlassButton>
       </div>
 
-      {/* Quick Tools Bar */}
-      <div className="border-t border-glassBorder/30 bg-glass/50 backdrop-blur-sm">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex flex-wrap items-center justify-center gap-4 text-sm">
-            <span className="text-text-muted">Quick Tools:</span>
-            {[
-              'Case Converter',
-              'Text Generator',
-              'JSON Formatter',
-              'Base64 Encoder',
-              'Password Generator',
-              'QR Code Generator'
-            ].map((tool, index) => (
-              <a
-                key={index}
-                href={`/tools/${tool.toLowerCase().replace(/\s+/g, '-')}`}
-                className="text-text-muted hover:text-primary transition-colors duration-200 flex items-center gap-1"
-              >
-                {tool}
-                <ExternalLink className="h-3 w-3" />
-              </a>
-            ))}
+      {/* Expanded Footer */}
+      {isExpanded && (
+        <motion.div
+          className="bg-glass backdrop-blur-glass border-t border-glassBorder"
+          initial={{ height: 0 }}
+          animate={{ height: 'auto' }}
+          exit={{ height: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <div className="max-w-7xl mx-auto p-4">
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+              {/* Notes List */}
+              <div className="lg:col-span-1">
+                <GlassCard className="p-4">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold text-text">Notes</h3>
+                    <GlassButton
+                      variant="primary"
+                      size="sm"
+                      onClick={createNewNote}
+                      className="text-xs"
+                    >
+                      <FileText className="h-3 w-3 mr-1" />
+                      New
+                    </GlassButton>
+                  </div>
+
+                  <div className="space-y-2 max-h-60 overflow-y-auto">
+                    {notes.length === 0 ? (
+                      <p className="text-sm text-text-muted text-center py-4">
+                        No notes yet. Create your first note!
+                      </p>
+                    ) : (
+                      notes.map(note => (
+                        <motion.div
+                          key={note.id}
+                          className={cn(
+                            'p-3 rounded-default border cursor-pointer transition-all duration-200',
+                            'hover:bg-glass-medium hover:border-glassBorder/60',
+                            currentNote?.id === note.id
+                              ? 'border-primary/50 bg-primary/10'
+                              : 'border-glassBorder/30 bg-glass-light'
+                          )}
+                          onClick={() => selectNote(note)}
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                        >
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1 min-w-0">
+                              <h4 className="font-medium text-text text-sm truncate">
+                                {note.title}
+                              </h4>
+                              <p className="text-xs text-text-muted mt-1 line-clamp-2">
+                                {note.content.replace(/<[^>]*>/g, '') || 'No content'}
+                              </p>
+                              <p className="text-xs text-text-disabled mt-1">
+                                {new Date(note.updatedAt).toLocaleDateString()}
+                              </p>
+                            </div>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                deleteNote(note.id);
+                              }}
+                              className="ml-2 p-1 rounded-full hover:bg-red-500/20 hover:text-red-400 transition-colors"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </button>
+                          </div>
+                        </motion.div>
+                      ))
+                    )}
+                  </div>
+                </GlassCard>
+              </div>
+
+              {/* Note Editor */}
+              {showNewNote && currentNote && (
+                <div className="lg:col-span-3">
+                  <GlassCard className="p-4">
+                    <div className="flex items-center justify-between mb-4">
+                      <input
+                        type="text"
+                        value={currentNote.title}
+                        onChange={(e) => updateNoteTitle(e.target.value)}
+                        className="text-xl font-semibold text-text bg-transparent border-none outline-none focus:ring-2 focus:ring-primary/50 rounded px-2 py-1"
+                        placeholder="Note title..."
+                      />
+                      <GlassButton
+                        variant="primary"
+                        size="sm"
+                        onClick={saveNote}
+                        className="text-xs"
+                      >
+                        <Save className="h-3 w-3 mr-1" />
+                        Save
+                      </GlassButton>
+                    </div>
+
+                    <RichTextEditor
+                      value={currentNote.content}
+                      onChange={updateNoteContent}
+                      placeholder="Start writing your note..."
+                      className="min-h-[200px]"
+                    />
+                  </GlassCard>
+                </div>
+              )}
+
+              {/* Empty State */}
+              {!showNewNote && (
+                <div className="lg:col-span-3">
+                  <GlassCard className="p-8 text-center">
+                    <FileText className="h-12 w-12 text-text-muted mx-auto mb-4" />
+                    <h3 className="text-lg font-semibold text-text mb-2">
+                      No Note Selected
+                    </h3>
+                    <p className="text-text-muted mb-4">
+                      Select a note from the list or create a new one to start writing.
+                    </p>
+                    <GlassButton
+                      variant="primary"
+                      onClick={createNewNote}
+                    >
+                      <FileText className="h-4 w-4 mr-2" />
+                      Create New Note
+                    </GlassButton>
+                  </GlassCard>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      </div>
-    </footer>
+        </motion.div>
+      )}
+    </motion.footer>
   );
 }

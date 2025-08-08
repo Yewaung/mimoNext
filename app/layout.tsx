@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from 'next';
 import { Inter, Poppins } from 'next/font/google';
-import { Footer } from '@/components/organisms/Footer';
 import './globals.css';
 
 // Optimize font loading
@@ -115,9 +114,6 @@ export default function RootLayout({
 
         {/* Main content */}
         <div className="relative z-10">{children}</div>
-
-        {/* Footer */}
-        <Footer />
 
         {/* Global toast container would go here if using react-hot-toast */}
       </body>

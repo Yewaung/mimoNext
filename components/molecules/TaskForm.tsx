@@ -1,22 +1,23 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { motion } from 'framer-motion';
-import { Save, X, Calendar, Clock, Tag } from 'lucide-react';
+import { Save, X, Calendar, Clock } from 'lucide-react';
 import { GlassCard } from '@/components/atoms/GlassCard';
 import { GlassInput } from '@/components/atoms/GlassInput';
 import { GlassSelect } from '@/components/atoms/GlassSelect';
 import { GlassButton } from '@/components/atoms/GlassButton';
 import { RichTextEditor } from '@/components/molecules/RichTextEditor';
+import { TagInput } from '@/components/molecules/TagInput';
 
 import type { Task, TaskStatus, CreateTaskPayload } from '@/types';
 
 // Form validation schema
 const taskSchema = z.object({
   title: z.string().min(1, 'Title is required').max(200, 'Title is too long'),
-  description: z.string().max(1000, 'Description is too long').optional(),
+  description: z.string().max(2000, 'Description is too long').optional(),
   status: z.enum([
     'thing_to_do',
     'working',
@@ -26,7 +27,7 @@ const taskSchema = z.object({
     'shortcut',
   ]),
   priority: z.enum(['low', 'medium', 'high']).optional(),
-  tags: z.string().optional(),
+  tags: z.array(z.string()).optional(),
   dueDate: z.string().optional(),
   estimatedTime: z.string().optional(),
 });
@@ -66,8 +67,7 @@ export function TaskForm({
   const {
     register,
     handleSubmit,
-    setValue,
-    watch,
+    control,
     formState: { errors, isValid },
   } = useForm<TaskFormData>({
     resolver: zodResolver(taskSchema),
@@ -76,7 +76,7 @@ export function TaskForm({
       description: task?.description || '',
       status: task?.status || 'thing_to_do',
       priority: task?.priority || undefined,
-      tags: task?.tags?.join(', ') || '',
+      tags: task?.tags || [],
       dueDate: task?.dueDate
         ? new Date(task.dueDate).toISOString().split('T')[0]
         : '',
@@ -84,8 +84,6 @@ export function TaskForm({
     },
     mode: 'onChange',
   });
-
-  const description = watch('description');
 
   const handleFormSubmit = (data: TaskFormData) => {
     const payload: CreateTaskPayload = {
@@ -95,11 +93,8 @@ export function TaskForm({
       ...(data.priority && {
         priority: data.priority as 'low' | 'medium' | 'high',
       }),
-      ...(data.tags && {
-        tags: data.tags
-          .split(',')
-          .map(tag => tag.trim())
-          .filter(Boolean),
+      ...(data.tags && data.tags.length > 0 && {
+        tags: data.tags,
       }),
       ...(data.dueDate && { dueDate: data.dueDate }),
       ...(data.estimatedTime && {
@@ -148,19 +143,19 @@ export function TaskForm({
             />
 
             {/* Description */}
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-text">
-                Description
-              </label>
-              <RichTextEditor
-                value={description || ''}
-                onChange={(value) => {
-                  setValue('description', value, { shouldValidate: true });
-                }}
-                placeholder="Enter task description..."
-                error={errors.description?.message}
-              />
-            </div>
+            <Controller
+              name="description"
+              control={control}
+              render={({ field }) => (
+                <RichTextEditor
+                  label="Description"
+                  value={field.value || ''}
+                  onChange={field.onChange}
+                  placeholder="Enter task description with rich formatting..."
+                  error={errors.description?.message}
+                />
+              )}
+            />
 
             {/* Status and Priority Row */}
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -182,13 +177,18 @@ export function TaskForm({
             </div>
 
             {/* Tags */}
-            <GlassInput
-              label="Tags"
-              placeholder="tag1, tag2, tag3..."
-              hint="Separate tags with commas"
-              leftIcon={<Tag className="h-4 w-4" />}
-              error={errors.tags?.message}
-              {...register('tags')}
+            <Controller
+              name="tags"
+              control={control}
+              render={({ field }) => (
+                <TagInput
+                  label="Tags"
+                  value={field.value || []}
+                  onChange={field.onChange}
+                  placeholder="Type and press Enter to add tags..."
+                  error={errors.tags?.message}
+                />
+              )}
             />
 
             {/* Due Date and Estimated Time Row */}

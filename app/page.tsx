@@ -8,6 +8,7 @@ import { GlassButton } from '@/components/atoms/GlassButton';
 import { GlassInput } from '@/components/atoms/GlassInput';
 import { TaskForm } from '@/components/molecules/TaskForm';
 import { TaskBoard } from '@/components/organisms/TaskBoard';
+import { Footer } from '@/components/organisms/Footer';
 import { useTasks } from '@/hooks/useTasks';
 import { useTaskFilters } from '@/hooks/useTaskFilters';
 import { taskStorage } from '@/lib/storage';
@@ -301,6 +302,9 @@ export default function HomePage() {
           />
         </div>
       )}
+
+      {/* Footer with Notes */}
+      <Footer />
     </div>
   );
 }

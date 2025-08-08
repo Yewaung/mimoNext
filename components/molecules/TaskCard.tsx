@@ -64,10 +64,9 @@ export function TaskCard({ task, onEdit, onDelete, className }: TaskCardProps) {
               {task.title}
             </h3>
             {task.description && (
-              <div 
-                className="mt-1 line-clamp-2 text-sm text-text-muted prose prose-sm max-w-none"
-                dangerouslySetInnerHTML={{ __html: task.description }}
-              />
+              <p className="mt-1 line-clamp-2 text-sm text-text-muted">
+                {task.description}
+              </p>
             )}
           </div>
 
