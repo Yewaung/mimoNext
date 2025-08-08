@@ -35,9 +35,8 @@ export function DraggableTaskCard({
       {...listeners}
       {...attributes}
       className={cn(
-        'transition-all duration-200',
-        isDragging && 'rotate-2 scale-95 opacity-50',
-        !isDragging && 'cursor-grab hover:scale-[1.02] active:cursor-grabbing',
+        isDragging && 'opacity-50',
+        !isDragging && 'cursor-grab active:cursor-grabbing',
         className
       )}
     >
@@ -45,10 +44,7 @@ export function DraggableTaskCard({
         task={task}
         onEdit={onEdit}
         onDelete={onDelete}
-        className={cn(
-          'transform transition-all duration-200',
-          isDragging && 'drag-preview'
-        )}
+        className={isDragging ? 'ring-2 ring-primary/50' : ''}
       />
     </div>
   );

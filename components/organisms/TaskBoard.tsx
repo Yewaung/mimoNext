@@ -102,7 +102,7 @@ export function TaskBoard({
           className
         )}
       >
-        {statusColumns.map(({ status, title, color }, index) => (
+        {statusColumns.map(({ status, title, color }) => (
           <TaskColumn
             key={status}
             status={status}
@@ -111,7 +111,6 @@ export function TaskBoard({
             tasks={tasksByStatus[status] || []}
             onTaskEdit={onTaskEdit}
             onTaskDelete={onTaskDelete}
-            animationDelay={0.4 + index * 0.1}
           />
         ))}
       </div>
@@ -119,7 +118,7 @@ export function TaskBoard({
       {/* Drag overlay - shows the dragged item */}
       <DragOverlay>
         {activeTask ? (
-          <div className="drag-overlay">
+          <div className="opacity-90">
             <TaskCard
               task={activeTask}
               onEdit={onTaskEdit}

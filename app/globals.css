@@ -94,16 +94,8 @@
   }
 
   /* Drag and drop utilities */
-  .drag-overlay {
-    @apply rotate-3 scale-105 transform opacity-90 shadow-2xl;
-  }
-
-  .drag-preview {
-    @apply ring-primary/50 transform shadow-lg ring-2 transition-all duration-200;
-  }
-
   .drop-zone-active {
-    @apply border-primary/50 bg-primary/10 scale-105;
+    @apply border-primary/50 bg-primary/10;
   }
 
   .drop-zone-idle {
