@@ -124,3 +124,4 @@ export function StatusBadge({
 
 // Export status configuration for use in other components
 export { statusConfig };
+

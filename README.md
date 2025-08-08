@@ -243,3 +243,4 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 [🌟 Star this repo](https://github.com/yourusername/liquidglass-task-manager) · [🐛 Report Bug](https://github.com/yourusername/liquidglass-task-manager/issues) · [✨ Request Feature](https://github.com/yourusername/liquidglass-task-manager/issues)
 
 </div>
+

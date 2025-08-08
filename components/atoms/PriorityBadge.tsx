@@ -95,3 +95,4 @@ export function PriorityBadge({
 
 // Export priority configuration for use in other components
 export { priorityConfig };
+

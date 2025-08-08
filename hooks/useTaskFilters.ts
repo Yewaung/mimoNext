@@ -242,3 +242,4 @@ export function useTaskFilters(tasks: Task[]): UseTaskFiltersReturn {
     availableTags,
   };
 }
+
