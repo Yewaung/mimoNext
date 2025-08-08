@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Plus, Search, Filter, Download, Upload } from 'lucide-react';
 import { GlassCard } from '@/components/atoms/GlassCard';
@@ -10,6 +10,7 @@ import { TaskForm } from '@/components/molecules/TaskForm';
 import { TaskBoard } from '@/components/organisms/TaskBoard';
 import { useTasks } from '@/hooks/useTasks';
 import { useTaskFilters } from '@/hooks/useTaskFilters';
+import { taskStorage } from '@/lib/storage';
 import type { Task, TaskStatus } from '@/types';
 
 export default function HomePage() {
@@ -22,6 +23,7 @@ export default function HomePage() {
     deleteTask,
     exportTasks,
     importTasks,
+    updateLocalTask,
   } = useTasks();
 
   const { filteredTasks, setSearchQuery, clearAllFilters, hasActiveFilters } =
@@ -29,6 +31,7 @@ export default function HomePage() {
 
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | undefined>();
+  const [dragDropError, setDragDropError] = useState<string | null>(null);
 
   // Status columns for stats display
   const statusColumns: { status: TaskStatus; title: string }[] = [
@@ -86,16 +89,38 @@ export default function HomePage() {
     setShowTaskForm(true);
   };
 
-  const handleTaskStatusChange = async (
+  // Optimistic update for drag and drop - updates UI first, then syncs to storage
+  const handleTaskStatusChange = useCallback(async (
     taskId: string,
     newStatus: TaskStatus
   ) => {
-    try {
-      await updateTask({ id: taskId, status: newStatus });
-    } catch (err) {
-      console.error('Failed to update task status:', err);
+    // Find the current task to get the previous status for potential rollback
+    const currentTask = tasks.find(task => task.id === taskId);
+    if (!currentTask) {
+      console.error('Task not found for status update');
+      return;
     }
-  };
+
+    const previousStatus = currentTask.status;
+
+    // Step 1: Update UI immediately (optimistic update)
+    updateLocalTask(taskId, { status: newStatus });
+
+    // Step 2: Update storage in the background
+    try {
+      await taskStorage.updateTask({ id: taskId, status: newStatus });
+    } catch (err) {
+      // Step 3: If storage update fails, revert the UI change
+      console.error('Failed to update task status in storage:', err);
+      updateLocalTask(taskId, { status: previousStatus });
+      
+      // Show error message (you could also use a toast notification)
+      setDragDropError('Failed to update task status. Please try again.');
+      
+      // Clear error after a few seconds
+      setTimeout(() => setDragDropError(null), 3000);
+    }
+  }, [tasks, updateLocalTask]);
 
   const handleExportTasks = async () => {
     try {
@@ -247,14 +272,16 @@ export default function HomePage() {
       )}
 
       {/* Error state */}
-      {error && (
+      {(error || dragDropError) && (
         <motion.div
           className="fixed bottom-4 right-4 z-50"
           initial={{ opacity: 0, x: 100 }}
           animate={{ opacity: 1, x: 0 }}
         >
           <GlassCard className="max-w-md border-red-400/30 bg-red-500/20 p-4">
-            <p className="font-medium text-red-400">Error: {error}</p>
+            <p className="font-medium text-red-400">
+              Error: {dragDropError || error}
+            </p>
           </GlassCard>
         </motion.div>
       )}

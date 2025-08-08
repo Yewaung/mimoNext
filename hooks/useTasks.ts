@@ -177,6 +177,17 @@ export function useTasks(options: UseTasksOptions = {}) {
     await loadTasks();
   }, [loadTasks]);
 
+  // Update local task state (for optimistic updates)
+  const updateLocalTask = useCallback((taskId: string, updates: Partial<Task>) => {
+    setTasks(prevTasks => 
+      prevTasks.map(task => 
+        task.id === taskId 
+          ? { ...task, ...updates, updatedAt: new Date().toISOString() }
+          : task
+      )
+    );
+  }, []);
+
   // Load tasks on mount if enabled
   useEffect(() => {
     if (initialLoad) {
@@ -200,6 +211,7 @@ export function useTasks(options: UseTasksOptions = {}) {
     exportTasks,
     importTasks,
     refetch,
+    updateLocalTask,
     
     // Utils
     hasError: !!error,
