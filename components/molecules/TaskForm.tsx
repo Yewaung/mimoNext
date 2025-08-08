@@ -9,7 +9,8 @@ import { GlassCard } from '@/components/atoms/GlassCard';
 import { GlassInput } from '@/components/atoms/GlassInput';
 import { GlassSelect } from '@/components/atoms/GlassSelect';
 import { GlassButton } from '@/components/atoms/GlassButton';
-import { cn } from '@/utils/cn';
+import { RichTextEditor } from '@/components/molecules/RichTextEditor';
+
 import type { Task, TaskStatus, CreateTaskPayload } from '@/types';
 
 // Form validation schema
@@ -65,6 +66,8 @@ export function TaskForm({
   const {
     register,
     handleSubmit,
+    setValue,
+    watch,
     formState: { errors, isValid },
   } = useForm<TaskFormData>({
     resolver: zodResolver(taskSchema),
@@ -81,6 +84,8 @@ export function TaskForm({
     },
     mode: 'onChange',
   });
+
+  const description = watch('description');
 
   const handleFormSubmit = (data: TaskFormData) => {
     const payload: CreateTaskPayload = {
@@ -147,26 +152,14 @@ export function TaskForm({
               <label className="block text-sm font-medium text-text">
                 Description
               </label>
-              <textarea
+              <RichTextEditor
+                value={description || ''}
+                onChange={(value) => {
+                  setValue('description', value, { shouldValidate: true });
+                }}
                 placeholder="Enter task description..."
-                rows={3}
-                className={cn(
-                  'w-full rounded-default border border-glassBorder bg-glass backdrop-blur-glass',
-                  'resize-vertical px-4 py-3 text-text placeholder-text-muted',
-                  'transition-all duration-200 ease-out',
-                  'focus:ring-primary/50 focus:border-primary/50 focus:outline-none focus:ring-2',
-                  'hover:border-glassBorder/60 hover:bg-glass-medium',
-                  'text-shadow',
-                  errors.description &&
-                    'border-red-400 focus:border-red-400 focus:ring-red-400/50'
-                )}
-                {...register('description')}
+                error={errors.description?.message}
               />
-              {errors.description && (
-                <p className="text-sm text-red-400">
-                  {errors.description.message}
-                </p>
-              )}
             </div>
 
             {/* Status and Priority Row */}

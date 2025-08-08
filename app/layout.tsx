@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { Inter, Poppins } from 'next/font/google';
+import { Footer } from '@/components/organisms/Footer';
 import './globals.css';
 
 // Optimize font loading
@@ -101,19 +102,22 @@ export default function RootLayout({
 
         {/* Animated background elements */}
         <div className="pointer-events-none fixed inset-0 overflow-hidden">
-          <div className="bg-primary/10 absolute -right-40 -top-40 h-80 w-80 animate-pulse rounded-full blur-3xl" />
+          <div className="absolute -right-40 -top-40 h-80 w-80 animate-pulse rounded-full bg-primary/10 blur-3xl" />
           <div
-            className="bg-secondary/10 absolute -bottom-40 -left-40 h-80 w-80 animate-pulse rounded-full blur-3xl"
+            className="absolute -bottom-40 -left-40 h-80 w-80 animate-pulse rounded-full bg-secondary/10 blur-3xl"
             style={{ animationDelay: '1s' }}
           />
           <div
-            className="bg-accent/10 absolute left-1/2 top-1/2 h-60 w-60 -translate-x-1/2 -translate-y-1/2 animate-pulse rounded-full blur-3xl"
+            className="absolute left-1/2 top-1/2 h-60 w-60 -translate-x-1/2 -translate-y-1/2 animate-pulse rounded-full bg-accent/10 blur-3xl"
             style={{ animationDelay: '2s' }}
           />
         </div>
 
         {/* Main content */}
         <div className="relative z-10">{children}</div>
+
+        {/* Footer */}
+        <Footer />
 
         {/* Global toast container would go here if using react-hot-toast */}
       </body>

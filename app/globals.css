@@ -94,13 +94,52 @@
   }
 
   /* Drag and drop utilities */
-  .drop-zone-active {
-    @apply border-primary/50 bg-primary/10;
-  }
+.drop-zone-active {
+  @apply border-primary/50 bg-primary/10;
+}
 
-  .drop-zone-idle {
-    @apply border-transparent hover:border-glassBorder/30;
-  }
+.drop-zone-idle {
+  @apply border-transparent hover:border-glassBorder/30;
+}
+
+/* Rich text editor styles */
+.prose {
+  @apply text-text-muted;
+}
+
+.prose strong {
+  @apply font-semibold text-text;
+}
+
+.prose em {
+  @apply italic;
+}
+
+.prose ul {
+  @apply list-disc list-inside space-y-1;
+}
+
+.prose ol {
+  @apply list-decimal list-inside space-y-1;
+}
+
+.prose a {
+  @apply text-primary hover:text-primary/80 underline;
+}
+
+.prose code {
+  @apply bg-glass-dark px-1 py-0.5 rounded text-xs font-mono;
+}
+
+.prose blockquote {
+  @apply border-l-4 border-primary/30 pl-4 italic;
+}
+
+/* Content editable placeholder */
+[contenteditable]:empty:before {
+  content: attr(data-placeholder);
+  @apply text-text-muted pointer-events-none;
+}
 }
 
 /* Utility layer for specific overrides */
